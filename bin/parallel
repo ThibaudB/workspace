@@ -1,0 +1,24 @@
+#!/bin/zsh
+# Run all commands from an array in parallel
+
+trap "echo '-- Ignore SIGINT and SIGTERM while starting process --'" SIGINT SIGTERM
+
+_trap () {
+    trap '' INT TERM
+
+    echo "-- Killing subprocess ${pids[*]} --"
+
+    pkill -P $$
+
+    wait
+}
+
+# Start all commands
+for i in $@; do
+    eval $i &
+done
+
+trap _trap SIGINT SIGTERM
+
+# Wait for all process
+wait

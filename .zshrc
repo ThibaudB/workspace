@@ -21,6 +21,7 @@ export reload_env_var = function () {
 
 # Reset PATH to initial PATH
 reload_env_var PATH
+export PATH="$PATH:$MYZSH_DIR/bin"
 
 # Exports
 export PROFILE="$HOME/.zshrc"

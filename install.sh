@@ -6,15 +6,20 @@ MYZSH_SCRIPTS_DIR="$MYZSH_DIR/scripts"
 
 OS=`$MYZSH_SCRIPTS_DIR/os`
 
-git clone git@github.com:ThibaudB/workspace.git $1
-
 sudo apt-get update
 
+git clone git@github.com:ThibaudB/workspace.git $1
+
+sudo apt-get install "$MYZSH_DIR/packages.txt"
+
+# Configure Python3 as default python
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
 # Tools
-sudo apt-get install pip 
 pip install Jinja2
 
-sudo apt-get install git 
+# Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 # Zsh
 if [ $OS == "WSL2" ];

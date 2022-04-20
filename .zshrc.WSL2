@@ -15,6 +15,8 @@ alias gitg="git-gui.exe"
 alias curl="curl -k"
 alias clip="clip.exe"
 
+alias apt-get-list="zcat /var/log/apt/history.log.*.gz | cat - /var/log/apt/history.log | grep -Po '^Commandline: apt-get install (?!.*--reinstall)\K.*' | sort"
+
 export vsc = function () {
   cd -P `dirname $1`
   debug_exec "'/mnt/c/Users/thibaud.buchs/AppData/Local/Programs/Microsoft VS Code/Code.exe' -r `basename $1`"
