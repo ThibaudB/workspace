@@ -32,7 +32,7 @@ export APP="$WORKSPACE/app"
 export EDITOR='vi'
 
 # Alias
-alias reload="source $PROFILE"
+alias reload="source $MYZSH_DIR/my-zshrc.sh"
 
 os_configuration="$MYZSH_DIR/my-zshrc."`os`".sh"
 if [ -f $os_configuration ] ; then

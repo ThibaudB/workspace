@@ -1,8 +1,8 @@
 ansible
+net-tools
 p7zip-full
 pass
 pip
-subversion
 unzip
 xclip
 zip

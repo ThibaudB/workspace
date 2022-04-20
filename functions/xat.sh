@@ -7,6 +7,6 @@ export xat = function () {
     command=(${@:2})
 
     cd $location > /dev/null
-    "${command[@]}"
+    "${command[@]}" || true
     cd - > /dev/null
 }

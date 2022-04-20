@@ -1,7 +1,6 @@
 #!/bin/zsh
 
 cd $MYZSH_DIR
-
 git pull
-
 echo "Update done !"
+cd -

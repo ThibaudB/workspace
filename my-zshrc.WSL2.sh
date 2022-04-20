@@ -1,7 +1,29 @@
 #!/bin/zsh
 # Exports
-# set DISPLAY variable to the IP automatically assigned to WSL2
-export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
+
+# IP addresses for currently running Linux and Windows systems
+LINUX_IP=$(ip addr | awk '/inet / && !/127.0.0.1/ {split($2,a,"/"); print a[1]}')
+WINDOWS_IP=$(ip route | awk '/^default/ {print $3}')
+
+# IP addresses in current windows defender firewall rule
+# netsh outputs line of "^(Local|Remote)IP:\s+IPADDR/32$" so get second field of
+# 'IPADDR/32' and split it on '/' then just print IPADDR
+FIREWALL_WINDOWS_IP=$(netsh.exe advfirewall firewall show rule name=X11-Forwarding | awk '/^LocalIP/ {split($2,a,"/");print a[1]}')
+FIREWALL_LINUX_IP=$(netsh.exe advfirewall firewall show rule name=X11-Forwarding | awk '/^RemoteIP/ {split($2,a,"/");print a[1]}')
+
+# Update firewall rule if firewall rules IPs don't match actual ones
+if [ "$FIREWALL_LINUX_IP" != "$LINUX_IP" ] || [ "$WINDOWS_IP" != "$FIREWALL_WINDOWS_IP" ]; then
+	powershell.exe -Command "Start-Process netsh.exe -ArgumentList \"advfirewall firewall set rule name=X11-Forwarding new localip=$WINDOWS_IP remoteip=$LINUX_IP \" -Verb RunAs"
+fi
+
+# Appropriately set DISPLAY to Windows X11 server
+DISPLAY="$WINDOWS_IP:0"
+
+# Tell X11 programs to render on Windows, not linux, side
+# docs: https://docs.mesa3d.org/envvars.html
+LIBGL_ALWAYS_INDIRECT=1
+
+export DISPLAY LIBGL_ALWAYS_INDIRECT
 
 # We're just modifying unreadable default ln color
 eval `dircolors ~/.dir_colors`
@@ -36,13 +58,3 @@ alias pidForPort="netstat -vanp tcp | grep "
 
 # Automatically start dbus
 sudo /etc/init.d/dbus start &> /dev/null
-
-DOCKER_DISTRO="Ubuntu"
-DOCKER_DIR=/mnt/wsl/shared-docker
-DOCKER_SOCK="$DOCKER_DIR/docker.sock"
-export DOCKER_HOST="unix://$DOCKER_SOCK"
-if [ ! -S "$DOCKER_SOCK" ]; then
-   mkdir -pm o=,ug=rwx "$DOCKER_DIR"
-   chgrp docker "$DOCKER_DIR"
-   /mnt/c/Windows/System32/wsl.exe -d $DOCKER_DISTRO sh -c "nohup sudo -b dockerd > $DOCKER_DIR/dockerd.log 2>&1"
-fi
