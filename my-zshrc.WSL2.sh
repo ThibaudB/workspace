@@ -57,4 +57,4 @@ alias lw="ls -1 | wc -l"
 alias pidForPort="netstat -vanp tcp | grep "
 
 # Automatically start dbus
-sudo /etc/init.d/dbus start &> /dev/null
+run_once sudo /etc/init.d/dbus start &> /dev/null

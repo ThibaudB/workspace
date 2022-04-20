@@ -29,7 +29,6 @@ export on_git_diff = function () {
 
     # If diffs exists check that it doesn't match the previous diffs
     if [ ! -z "$diff" ] ; then
-        echo "has diffs"
         if [ -f $watch_file_finest ]; then
             old_diff_md5=$(< $watch_file_finest)
             [ "$diff_md5" != "$old_diff_md5" ]
