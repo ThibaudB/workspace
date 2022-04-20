@@ -1,0 +1,99 @@
+#!/bin/sh
+
+# Exports
+export DXV3_ANSIBLE="$SYMSTORE/dxv3-ansible"
+export ANSIBLE_VAULT_PASSWORD_FILE="/Users/thibaudb/workspace/.config/.vault"
+
+# Alias
+alias ll="ls -al"
+alias lw="ls -1 | wc -l"
+alias _terraform="xat terraform/aws terraform "
+alias pidForPort="netstat -vanp tcp | grep "
+alias _ansible_vault="ansible-vault edit $DXV3_ANSIBLE/env/shared/group_vars/all/vault --vault-password-file $ANSIBLE_VAULT_PASSWORD_FILE"
+
+# Gradle
+alias gradlew="~/.mto/gradlew/gradlew"
+compdef gradlew=gradle
+
+# Postgres
+alias pg_start="launchctl load ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist"
+alias pg_stop="launchctl unload ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist"
+
+# AWS & Terraform utils
+export TF_VAR_owner=`id -un`
+export TF_VAR_private_key_file="/Users/$TF_VAR_owner/workspace/.config/.aws/DxArchiveForTheMassTest.pem"
+export TF_VAR_key_name="DxArchiveForTheMassTest"
+export TF_VAR_BU="DEV"
+export aws_filters_prefix="Name=tag:Owner,Values=$TF_VAR_owner Name=instance-state-name,Values=running Name=tag:Name,Values="
+export aws_sg_filters_prefix="Name=tag:Owner,Values=$TF_VAR_owner Name=tag:Name,Values="
+
+export get_aws_filters = function () {
+  echo "--filters ${1}*${2}*"
+}
+
+export aws_list_vms = function () {
+  aws ec2 describe-instances `get_aws_filters $aws_filters_prefix $1` --query "Reservations[].Instances[].[Tags[],InstanceId,PrivateIpAddress]" --output text |cat
+}
+
+export aws_list_ips = function () {
+  aws ec2 describe-instances `get_aws_filters $aws_filters_prefix $1` --query "Reservations[].Instances[].[PrivateIpAddress]" --output text |cat
+}
+
+export firefox_opentab = function () {
+  for i in `aws_list_ips $1`
+  do
+    /Applications/Firefox.app/Contents/MacOS/firefox -new-tab -url "$2$i$3"
+  done
+}
+
+export aws_list_sgs = function () {
+  aws ec2 describe-security-groups `get_aws_filters $aws_sg_filters_prefix $1` --query "SecurityGroups[].[Tags[],GroupName,GroupId]" --output text |cat
+}
+
+export aws_list_ids = function () {
+  aws ec2 describe-instances `get_aws_filters $aws_filters_prefix $1` --query "SecurityGroups[].[Tags[],GroupName,GroupId]"  --query "Reservations[].Instances[].[InstanceId]" --output text |cat
+}
+
+export aws_list_sgids = function () {
+  aws ec2 describe-security-groups `get_aws_filters $aws_sg_filters_prefix $1` --query "SecurityGroups[].[Tags[],GroupName,GroupId]"  --query "SecurityGroups[].[GroupId]" --output text |cat
+}
+
+export aws_delete_sgs = function () {
+  [ -z "$1" ] && echo "\$1 shouldn't be empty !" && return 1;
+  for i in `aws_list_sgids $1`
+  do
+    echo "Delete SG $i"
+    aws ec2 delete-security-group --group-id $i
+  done
+}
+
+export AWS_STOPPED_VMS="$HOME/.aws_stopped"
+
+export aws_stop_all = function () {
+  for i in `aws_list_ids $1`
+  do
+    aws ec2 stop-instances --instance-ids $i > /dev/null
+    echo "$i" >> $AWS_STOPPED_VMS
+  done
+}
+
+export aws_start_all = function () {
+  for i in `cat $AWS_STOPPED_VMS`
+  do
+    aws ec2 start-instances --instance-ids $i > /dev/null
+    echo "start instance $i"
+  done
+  rm $AWS_STOPPED_VMS
+}
+
+export ssh_aws = function () {
+  available_vms=(`aws_list_ips $1`)
+  ssh -i $TF_VAR_private_key_file dpadmin@${available_vms[$2]}
+}
+
+export export_alfresco_ip = function () {
+  export ALFRESCO_IP=`aws_list_ips $1`
+}
+
+# Gradle autocompletion
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
