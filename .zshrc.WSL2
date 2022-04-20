@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# Exports
+# set DISPLAY variable to the IP automatically assigned to WSL2
+export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0
+
+# We're just modifying unreadable default ln color
+eval `dircolors ~/.dir_colors`
+
+#Alias
+alias explorer="explorer.exe `pwd -P`"
+alias cmd="cmd.exe"
+alias gitk="gitk.exe"
+alias gitg="git-gui.exe"
+alias curl="curl -k"
+alias clip="clip.exe"
+
+export vsc = function () {
+  cd -P `dirname $1`
+  debug_exec "'/mnt/c/Users/thibaud.buchs/AppData/Local/Programs/Microsoft VS Code/Code.exe' -r `basename $1`"
+  cd -
+}
+
+export winget = function () { 
+  cmd.exe /c "winget $1 $2 $3";
+}
+
+export pass = function () {
+  /usr/bin/pass $@ | clip
+}
+
+alias ll="ls -al"
+alias lw="ls -1 | wc -l"
+alias pidForPort="netstat -vanp tcp | grep "
+
+# Automatically start dbus
+sudo /etc/init.d/dbus start &> /dev/null

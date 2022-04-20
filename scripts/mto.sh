@@ -35,24 +35,24 @@ export mto = function () {
       v="default"
     fi
 
-    target=$SYMSTORE/$v
+    target="$SYMSTORE/$v"
 
     if [[ $k == "m" ]]; then
       [ ! -d "$target" ] && echo "Path '$v' does not exist." && return 1
-      cd -P $target
+      debug_exec "cd -P '$target' &> /dev/null"
     elif [[ $k == "r" ]]; then
       [ ! -d "$target" ] && echo "Path '$v' does not exist." && return 1
-      rm $target &> /dev/null
+      debug_exec "rm '$target' &> /dev/null"
     elif [[ $k == "s" ]]; then
-      rm -rf $target &> /dev/null
+      debug_exec "rm '$target' &> /dev/null"
       # for subdirectory creation: mkdir -p $v
-      ln -s `pwd` $target
+      debug_exec "ln -s '`pwd`' '$target'"
     fi;
   done;
 }
 
 function _mto() {
-  _arguments '-s[set]' '-r[remove]' "1:path:_path_files -W $SYMSTORE"
+  _arguments '-s[set]' '-r[remove]' "1:path:_path_files -W '$SYMSTORE'"
 }
 
 compdef _mto mto

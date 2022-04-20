@@ -1,21 +1,29 @@
 #!/bin/sh
-cd ~
 
-type git 
-if [ $? -eq 1 ]
+MYZSH_DIR="$HOME/$1"
+MYZSH_FILES_DIR="$MYZSH_DIR/files"
+MYZSH_SCRIPTS_DIR="$MYZSH_DIR/scripts"
+
+OS=`$MYZSH_SCRIPTS_DIR/os`
+
+git clone git@github.com:ThibaudB/workspace.git $1
+
+sudo apt-get update
+
+# Tools
+sudo apt-get install pip 
+pip install Jinja2
+
+sudo apt-get install git 
+
+# Zsh
+if [ $OS == "WSL2" ];
 then
-  sudo apt-get install git
-else
-  echo "-- Skip git install"
+  sudo apt install git zsh -y
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
-if [ ! -d ~/workspace/app/nushell ]
-then
-  git clone https://github.com/nushell/nushell.git
-fi
+# Create bind and add source into the .zshrc
 
-cd ~/workspace/app/nushell
-git pull
-cd -
-
-sudo sh -c 'echo "$HOME/.cargo/bin/nu" >> /etc/shells'
+# Enhance vim display
+ln -s "$MYZSH_DIR/files/.vimrc" "$HOME/.vimrc"

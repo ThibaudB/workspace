@@ -1,9 +1,0 @@
-#!/bin/sh
-
-( cat - ~/.dx_mail_WFH.html) << HEADERS_END | /usr/sbin/sendmail -i $WFH_MAIL
-Subject: `date +'%Y%m%d'` : Thibaud BUCHS
-To: $WFH_MAIL
-MIME-Version: 1.0
-Content-Type: text/html
-
-HEADERS_END
