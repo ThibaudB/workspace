@@ -1,4 +1,3 @@
-#!/bin/sh
 
 # Exports
 # set DISPLAY variable to the IP automatically assigned to WSL2
@@ -37,3 +36,13 @@ alias pidForPort="netstat -vanp tcp | grep "
 
 # Automatically start dbus
 sudo /etc/init.d/dbus start &> /dev/null
+
+DOCKER_DISTRO="Ubuntu"
+DOCKER_DIR=/mnt/wsl/shared-docker
+DOCKER_SOCK="$DOCKER_DIR/docker.sock"
+export DOCKER_HOST="unix://$DOCKER_SOCK"
+if [ ! -S "$DOCKER_SOCK" ]; then
+   mkdir -pm o=,ug=rwx "$DOCKER_DIR"
+   chgrp docker "$DOCKER_DIR"
+   /mnt/c/Windows/System32/wsl.exe -d $DOCKER_DISTRO sh -c "nohup sudo -b dockerd > $DOCKER_DIR/dockerd.log 2>&1"
+fi

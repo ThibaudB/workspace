@@ -1,4 +1,4 @@
-export FUNCTION="$MYZSH_DIR/scripts"
+export FUNCTION="$MYZSH_DIR/functions"
 
 for src in `ls $FUNCTION/*`; do
   source $src
