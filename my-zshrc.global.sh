@@ -34,7 +34,7 @@ export EDITOR='vi'
 # Alias
 alias reload="source $PROFILE"
 
-os_configuration="$MYZSH_DIR/.zshrc."`os`
+os_configuration="$MYZSH_DIR/my-zshrc."`os`".sh"
 if [ -f $os_configuration ] ; then
   debug_exec "source '$os_configuration'"
 fi
