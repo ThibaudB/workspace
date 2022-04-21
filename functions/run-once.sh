@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Run a script based on git diff between two execution
-export run_once = function () {
+export run-once = function () {
 
     # Parameters
     command=(${@:1})

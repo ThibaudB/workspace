@@ -39,14 +39,14 @@ export mto = function () {
 
     if [[ $k == "m" ]]; then
       [ ! -d "$target" ] && echo "Path '$v' does not exist." && return 1
-      debug_exec "cd -P '$target' &> /dev/null"
+      debug-exec "cd -P '$target' &> /dev/null"
     elif [[ $k == "r" ]]; then
       [ ! -d "$target" ] && echo "Path '$v' does not exist." && return 1
-      debug_exec "rm '$target' &> /dev/null"
+      debug-exec "rm '$target' &> /dev/null"
     elif [[ $k == "s" ]]; then
-      debug_exec "rm '$target' &> /dev/null"
+      debug-exec "rm '$target' &> /dev/null"
       # for subdirectory creation: mkdir -p $v
-      debug_exec "ln -s '`pwd`' '$target'"
+      debug-exec "ln -s '`pwd`' '$target'"
     fi;
   done;
 }

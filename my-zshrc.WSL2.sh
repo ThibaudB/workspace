@@ -40,7 +40,7 @@ alias apt-get-list="zcat /var/log/apt/history.log.*.gz | cat - /var/log/apt/hist
 
 export vsc = function () {
   cd -P `dirname $1`
-  debug_exec "'/mnt/c/Users/thibaud.buchs/AppData/Local/Programs/Microsoft VS Code/Code.exe' -r `basename $1`"
+  debug-exec "'/mnt/c/Users/thibaud.buchs/AppData/Local/Programs/Microsoft VS Code/Code.exe' -r `basename $1`"
   cd -
 }
 
@@ -57,4 +57,4 @@ alias lw="ls -1 | wc -l"
 alias pidForPort="netstat -vanp tcp | grep "
 
 # Automatically start dbus
-run_once sudo /etc/init.d/dbus start &> /dev/null
+run-once sudo /etc/init.d/dbus start &> /dev/null

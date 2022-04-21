@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Run a script based on git diff between two execution
-export on_git_diff = function () {
+export on-git-diff = function () {
 
     # Parameters
     git_repository=$1
